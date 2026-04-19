@@ -1,34 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Happy Birthday ❤️</title>
+  <title>For You ❤️</title>
+
   <style>
     body {
-      text-align: center;
+      margin: 0;
+      overflow: hidden;
       font-family: sans-serif;
-      background: pink;
+      text-align: center;
+      background: linear-gradient(to top, #ff758c, #ff7eb3);
       color: white;
     }
+
+    h1 {
+      margin-top: 120px;
+      font-size: 35px;
+    }
+
+    #text {
+      font-size: 20px;
+      margin-top: 20px;
+      min-height: 30px;
+    }
+
     button {
-      padding: 10px 20px;
+      margin-top: 30px;
+      padding: 12px 25px;
       font-size: 18px;
-      border-radius: 10px;
+      border-radius: 20px;
       border: none;
-      background: red;
-      color: white;
+      background: white;
+      color: #ff4d6d;
+    }
+
+    .heart {
+      position: absolute;
+      top: -10px;
+      color: red;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <h1>Happy Birthday 🎉</h1>
-  <h2>Untuk Raisa 💖</h2>
+  <h1>Hai Kamu 💖</h1>
+  <div id="text"></div>
 
-  <p>Pencet tombol ini ya 👇</p>
+  <button onclick="mulai()">Klik ya 😆</button>
 
-  <button onclick="alert('Aku sayang kamu ❤️')">
-    Klik Aku 😆
-  </button>
+  <!-- Musik (opsional) -->
+  <audio id="music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+  </audio>
+
+  <script>
+    const kata = "Aku ga jago kata-kata... tapi aku sayang kamu ❤️";
+    let i = 0;
+
+    function mulai() {
+      document.getElementById("music").play();
+      ketik();
+    }
+
+    function ketik() {
+      if (i < kata.length) {
+        document.getElementById("text").innerHTML += kata.charAt(i);
+        i++;
+        setTimeout(ketik, 50);
+      }
+    }
+
+    function hati() {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.innerHTML = "💖";
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.fontSize = (Math.random() * 20 + 15) + "px";
+      h.style.animationDuration = (Math.random() * 3 + 2) + "s";
+
+      document.body.appendChild(h);
+
+      setTimeout(() => {
+        h.remove();
+      }, 5000);
+    }
+
+    setInterval(hati, 200);
+  </script>
 
 </body>
 </html>
