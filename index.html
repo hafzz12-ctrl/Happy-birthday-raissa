@@ -8,8 +8,9 @@
 </head>
 <body>
 
-<!-- THREE JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/FontLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/geometries/TextGeometry.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 
 <script>
@@ -22,43 +23,44 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// CONTROL (BIAR BISA DIPUTER)
+// CONTROL
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
-// LIGHTING (INI YANG BIKIN GA GEPENG)
-const light1 = new THREE.DirectionalLight(0xffffff, 1);
-light1.position.set(5,5,5);
+// LIGHT
+const light1 = new THREE.DirectionalLight(0xff99cc, 1);
+light1.position.set(3,3,5);
 scene.add(light1);
 
-const light2 = new THREE.AmbientLight(0x404040);
+const light2 = new THREE.AmbientLight(0x222222);
 scene.add(light2);
 
-// PLANET (UDAH 3D BENER)
-const textureLoader = new THREE.TextureLoader();
-
+// PLANET
 const planet = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 64, 64),
+  new THREE.SphereGeometry(1,64,64),
   new THREE.MeshStandardMaterial({
-    map: textureLoader.load("https://threejsfundamentals.org/threejs/resources/images/earth.jpg"),
-    emissive: 0xff0066,
-    emissiveIntensity: 0.3,
-    roughness: 0.5
+    color:0xff4d8d,
+    emissive:0xff0066,
+    emissiveIntensity:0.5,
+    roughness:0.3
   })
 );
-
 scene.add(planet);
 
-// RING
-const ring = new THREE.Mesh(
-  new THREE.TorusGeometry(2, 0.05, 16, 100),
-  new THREE.MeshBasicMaterial({ color: 0xff99cc })
+// GLOW
+const glow = new THREE.Mesh(
+  new THREE.SphereGeometry(1.3,64,64),
+  new THREE.MeshBasicMaterial({
+    color:0xff4d8d,
+    transparent:true,
+    opacity:0.2
+  })
 );
-scene.add(ring);
+scene.add(glow);
 
 // FOTO ORBIT
+const loader = new THREE.TextureLoader();
 const photos = [
-  "https://i.imgur.com/TAidPJV.jpg",
   "https://i.imgur.com/TAidPJV.jpg",
   "https://i.imgur.com/TAidPJV.jpg",
   "https://i.imgur.com/TAidPJV.jpg"
@@ -66,15 +68,14 @@ const photos = [
 
 const group = new THREE.Group();
 
-photos.forEach((src, i) => {
-  const tex = textureLoader.load(src);
-
+photos.forEach((src,i)=>{
+  const tex = loader.load(src);
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(1,1),
-    new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
+    new THREE.MeshBasicMaterial({map:tex, side:THREE.DoubleSide})
   );
 
-  const angle = (i / photos.length) * Math.PI * 2;
+  const angle = (i/photos.length)*Math.PI*2;
   mesh.position.set(Math.cos(angle)*3, 0, Math.sin(angle)*3);
 
   group.add(mesh);
@@ -82,25 +83,67 @@ photos.forEach((src, i) => {
 
 scene.add(group);
 
+// TEXT RING 3D
+const fontLoader = new THREE.FontLoader();
+let textGroup;
+
+fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font){
+
+  textGroup = new THREE.Group();
+  const text = " I LOVE YOU ❤️ ";
+  const radius = 2.2;
+
+  for(let i=0;i<text.length;i++){
+    const char = text[i];
+
+    const geo = new THREE.TextGeometry(char,{
+      font:font,
+      size:0.2,
+      height:0.05
+    });
+
+    const mat = new THREE.MeshBasicMaterial({color:0xff99cc});
+    const mesh = new THREE.Mesh(geo,mat);
+
+    const angle = (i/text.length)*Math.PI*2;
+
+    mesh.position.set(
+      Math.cos(angle)*radius,
+      0,
+      Math.sin(angle)*radius
+    );
+
+    mesh.rotation.y = -angle;
+
+    textGroup.add(mesh);
+  }
+
+  scene.add(textGroup);
+});
+
 // ANIMASI
-function animate() {
+function animate(){
   requestAnimationFrame(animate);
 
   planet.rotation.y += 0.01;
-  ring.rotation.x += 0.01;
+  glow.rotation.y += 0.01;
   group.rotation.y += 0.01;
 
+  if(textGroup){
+    textGroup.rotation.y += 0.01;
+  }
+
   controls.update();
-  renderer.render(scene, camera);
+  renderer.render(scene,camera);
 }
 
 animate();
 
 // RESPONSIVE
-window.addEventListener("resize", () => {
-  camera.aspect = innerWidth / innerHeight;
+window.addEventListener("resize",()=>{
+  camera.aspect = innerWidth/innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth,innerHeight);
 });
 </script>
 
