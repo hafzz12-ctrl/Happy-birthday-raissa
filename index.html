@@ -1,100 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>For You ❤️</title>
-
+  <title>Galaxy Love 💖</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      font-family: sans-serif;
-      text-align: center;
-      background: linear-gradient(to top, #ff758c, #ff7eb3);
-      color: white;
+      background: radial-gradient(circle, #1a001f, #000);
+      touch-action: none;
     }
 
-    h1 {
-      margin-top: 120px;
-      font-size: 35px;
+    #scene {
+      width: 100vw;
+      height: 100vh;
+      perspective: 1000px;
     }
 
-    #text {
-      font-size: 20px;
-      margin-top: 20px;
-      min-height: 30px;
+    #universe {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.1s;
     }
 
-    button {
-      margin-top: 30px;
-      padding: 12px 25px;
-      font-size: 18px;
-      border-radius: 20px;
-      border: none;
-      background: white;
-      color: #ff4d6d;
-    }
-
-    .heart {
+    .planet {
       position: absolute;
-      top: -10px;
-      color: red;
-      animation: fall linear infinite;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      margin: -100px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff4d6d, #ff0066);
+      box-shadow: 0 0 80px #ff4d6d;
     }
 
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-      }
+    .ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 350px;
+      height: 350px;
+      margin: -175px;
+      border-radius: 50%;
+      animation: spin 10s linear infinite;
     }
+
+    .ring span {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: 0 150px;
+      color: #ff99cc;
+      font-size: 14px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 500px;
+      height: 500px;
+      margin: -250px;
+      border-radius: 50%;
+      animation: spin 20s linear infinite;
+    }
+
+    .orbit img {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px pink;
+    }
+
   </style>
 </head>
 
 <body>
 
-  <h1>Hai Kamu 💖</h1>
-  <div id="text"></div>
+<div id="scene">
+  <div id="universe">
 
-  <button onclick="mulai()">Klik ya 😆</button>
+    <div class="planet"></div>
 
-  <!-- Musik (opsional) -->
-  <audio id="music" loop>
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
-  </audio>
+    <div class="ring" id="ring"></div>
 
-  <script>
-    const kata = "Aku ga jago kata-kata... tapi aku sayang kamu ❤️";
-    let i = 0;
+    <div class="orbit" id="orbit"></div>
 
-    function mulai() {
-      document.getElementById("music").play();
-      ketik();
-    }
+  </div>
+</div>
 
-    function ketik() {
-      if (i < kata.length) {
-        document.getElementById("text").innerHTML += kata.charAt(i);
-        i++;
-        setTimeout(ketik, 50);
-      }
-    }
+<script>
+  // TEXT RING
+  const text = " I LOVE YOU ❤️ ";
+  const ring = document.getElementById("ring");
 
-    function hati() {
-      const h = document.createElement("div");
-      h.className = "heart";
-      h.innerHTML = "💖";
-      h.style.left = Math.random() * 100 + "vw";
-      h.style.fontSize = (Math.random() * 20 + 15) + "px";
-      h.style.animationDuration = (Math.random() * 3 + 2) + "s";
+  for (let i = 0; i < text.length * 6; i++) {
+    const span = document.createElement("span");
+    span.innerText = text[i % text.length];
+    span.style.transform = `rotate(${i * 10}deg)`;
+    ring.appendChild(span);
+  }
 
-      document.body.appendChild(h);
+  // FOTO ORBIT (SUDAH DIMASUKIN)
+  const photos = [
+    "https://i.imgur.com/TAidPJV.jpg",
+    "https://i.imgur.com/TAidPJV.jpg",
+    "https://i.imgur.com/TAidPJV.jpg",
+    "https://i.imgur.com/TAidPJV.jpg"
+  ];
 
-      setTimeout(() => {
-        h.remove();
-      }, 5000);
-    }
+  const orbit = document.getElementById("orbit");
 
-    setInterval(hati, 200);
-  </script>
+  photos.forEach((src, i) => {
+    const img = document.createElement("img");
+    img.src = src;
+
+    const angle = (i / photos.length) * 360;
+    img.style.transform = `rotate(${angle}deg) translate(250px) rotate(-${angle}deg)`;
+
+    orbit.appendChild(img);
+  });
+
+  // DRAG GESER
+  let x = 0, y = 0;
+  let dragging = false;
+
+  document.addEventListener("touchstart", () => dragging = true);
+  document.addEventListener("touchend", () => dragging = false);
+
+  document.addEventListener("touchmove", (e) => {
+    if (!dragging) return;
+
+    x += e.touches[0].movementX || 1;
+    y += e.touches[0].movementY || 1;
+
+    document.getElementById("universe").style.transform =
+      `rotateX(${y}deg) rotateY(${x}deg)`;
+  });
+</script>
 
 </body>
 </html>
